@@ -1,0 +1,212 @@
+Picowa
+
+Picowa is a Sinatra-like tiny web application framework for PHP 5.2 that was 
+derived from Fitzgerald framework and anatoo's Curry, Quotation library and 
+inspired by Blanka framework.
+
+Fitzgerald framework:
+ http://github.com/jim/fitzgerald
+
+Blanka framework:
+ http://github.com/anatoo/Blanka
+
+anatoo's Curry and Quotation library:
+ http://d.hatena.ne.jp/anatoo/20090402/1238603946
+
+
+Example 1 : minimum applicaton
+
+	$app = new Picowa;
+	
+	$app->get('/','hello');
+		function hello() {
+			return 'Hello world!';
+		}
+	
+	$app->run();
+
+
+Exapmle 2 : more object oriented
+
+	class Application extends Picowa {
+		public function hello() {
+			return 'Hello world!';
+		}
+	}
+
+	$app = new Application;
+	$app->get('/', $app->_hello());
+	$app->run();
+
+
+Exapmle 3 : argument passing
+
+	$app = new Picowa;
+	
+	$app->get('/:page', bind('get_page',$app), array('page'=>'about|contact|faq'));
+		function get_page($app, $page) {
+			return $app->render($page);
+		}
+	
+	$app->run();
+
+
+Exapmle 4 : before filter
+
+	class Application extends Picowa {
+		public function hello($name) {
+			return "Hello {$name}!";
+		}
+		
+		public function debuglog($args) {
+			var_dump($args);
+		}
+	}
+	
+	$app = new Application;
+	$app->get('/:name', $app->_hello(), array('name'=>'Jon|Ponch'));
+	$app->before('get','/:name', $app->_debuglog());
+	
+	$app->run();
+
+
+Exapmle 5 : after filter
+
+	$app = new Picowa;
+	
+	$app->get('/','hello');
+	$app->get('/ja/','hello');
+		function hello() {
+			return 'Hello world!';
+		}
+	
+	$app->after('get','/ja/','translate');
+		function translate($text) {
+			return strtr($text, array('Hello'=>'こんにちは','world'=>'世界'));
+		}
+	
+	$app->run();
+
+
+Exapmle 6 : before/around/after filter and execution order
+
+	$app = new Picowa;
+	
+	$app->get('/:name','hello');
+		function hello($name) {
+			return "Hello {$name}!";
+		}
+
+	$app->get('/bye/:name','bye');
+		function bye($name) {
+			return "Bye bye {$name}!";
+		}
+	
+	$app->before('GET','*','debuglog');
+		function debuglog($args) {
+			var_dump('before:1',$args);
+		}
+
+	$app->before('GET','*','debuglog2');
+		function debuglog2($args) {
+			var_dump('before:2',$args);
+		}
+
+	$app->after('GET','*','debuglog3');
+		function debuglog3($text) {
+			var_dump('after:1',$text);
+			return $text;
+		}
+
+	$app->after('GET','*','debuglog4');
+		function debuglog4($text) {
+			var_dump('after:2',$text);
+			return $text;
+		}
+
+	$app->around('GET','*','debuglog5');
+		function debuglog5($fn,$args) {
+			var_dump('around_start:1',$args);
+			$text = apply($fn,$args);
+			var_dump('around_end:1',$text);
+			return $text;
+		}
+
+	$app->around('GET','*','debuglog6');
+		function debuglog6($fn,$args) {
+			var_dump('around_start:2',$args);
+			$text = apply($fn,$args);
+			var_dump('around_end:2',$text);
+			return $text;
+		}
+		
+	$app->run();
+
+
+Exapmle 7 : component lazy loading and simple dependency injection
+
+	class Application extends Picowa
+	{
+		public $uses = array('Foo','Bar');
+	}
+
+	class MyApp extends Application
+	{
+		public $uses = array('Baz');
+	}
+
+	class Foo extends Pico
+	{
+		public $name = 'Foo';
+		public function __construct()
+		{
+			var_dump(get_class($this));
+		}
+	}
+
+	class Bar extends Pico
+	{
+		public $name = 'Bar';
+		public function __construct()
+		{
+			var_dump(get_class($this));
+		}
+	}
+
+	class Baz extends Pico
+	{
+		public $name = 'Baz';
+		public function __construct()
+		{
+			var_dump(get_class($this));
+		}
+	}
+
+	class MyContainer extends PwComponentBuilder
+	{
+		public function buildFoo()
+		{
+			return new Bar;
+		}
+		public function buildBar()
+		{
+			return new Foo;
+		}
+	}
+
+	PwComponentFactory::set('MyContainer');
+
+	$app = new MyApp;
+
+	$app->get('/',bind('hello',$app));
+		function hello($a) {
+			return "Hello!".$a->Foo->name.$a->Bar->name.$a->Baz->name;
+		}
+
+	$app->get('/test/',bind('hello_test',$app));
+		function hello_test($a) {
+			return "Hello!".$a->Foo->name.$a->Bar->name;
+		}
+
+	$app->run();
+

@@ -1,0 +1,16 @@
+{
+	"test_server":"127.0.0.1",
+	"admin_address":"",
+	"session_name":"picowa_session",
+	"cookie_lifetime":0,
+	"production":{
+		"use_debug_mail":1,
+		"use_debug_log":1,
+		"builder":"PwComponentBuilder"
+	},
+	"debug":{
+		"use_debug_mail":0,
+		"use_debug_log":0,
+		"builder":"PwComponentBuilder"
+	}
+}
