@@ -1,7 +1,7 @@
 <?php
 /**
  * Quotation
- * ���\�b�h���o���̂��߂̃��b�p�[�N���X
+ * メソッド取り出しのためのラッパークラス
  * http://d.hatena.ne.jp/anatoo/20090402/1238603946
  * @package		Bind
  * @since		2009-8-29
