@@ -28,7 +28,7 @@ class Pico
 	public function __get($sName)
 	{
 		if (isset($this->components[$sName])) {
-			return $this->components[$sName]->invoke();
+			return $this->{$sName} = call_user_func($this->components[$sName]);
 		}
 		return null;
 	}
@@ -48,13 +48,15 @@ class Pico
 	{
 		$aComponents = array_unique($this->componentClasses());
 		foreach ($aComponents as $sClass) {
-			$this->components[$sClass] = once(quote($this->factory)->build($sClass));
+			$this->components[$sClass] = quote($this->factory)->build($sClass);
 		}
 	}
 
-	public function attach($sClass)
+	public function attach($sName, $sClass = null)
 	{
-		$this->components[$sClass] = once(quote($this->factory)->build($sClass));
+		$sClass = is_null($sClass) ? $sName : $sClass ;
+		if(property_exists($this, $sName)) unset($this->{$sName});
+		$this->components[$sName] = quote($this->factory)->build($sClass);
 		return $this;
 	}
 }
