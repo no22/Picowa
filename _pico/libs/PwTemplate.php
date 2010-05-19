@@ -16,9 +16,9 @@ class PwTemplate
 		$this->root = $root;
 	}
 	
-	public function render($locals) 
+	public function render($context) 
 	{
-		extract($locals);
+		extract($context);
 		ob_start();
 		include($this->root . 'views/' . $this->fileName . '.php');
 		return ob_get_clean();

@@ -102,29 +102,29 @@ Exapmle 6 : before/around/after filter and execution order
 			return "Bye bye {$name}!";
 		}
 	
-	$app->before('GET','*','debuglog');
+	$app->before('GET','.*','debuglog');
 		function debuglog($args) {
 			var_dump('before:1',$args);
 		}
 
-	$app->before('GET','*','debuglog2');
+	$app->before('GET','.*','debuglog2');
 		function debuglog2($args) {
 			var_dump('before:2',$args);
 		}
 
-	$app->after('GET','*','debuglog3');
+	$app->after('GET','.*','debuglog3');
 		function debuglog3($text) {
 			var_dump('after:1',$text);
 			return $text;
 		}
 
-	$app->after('GET','*','debuglog4');
+	$app->after('GET','.*','debuglog4');
 		function debuglog4($text) {
 			var_dump('after:2',$text);
 			return $text;
 		}
 
-	$app->around('GET','*','debuglog5');
+	$app->around('GET','.*','debuglog5');
 		function debuglog5($fn,$args) {
 			var_dump('around_start:1',$args);
 			$text = apply($fn,$args);
@@ -132,7 +132,7 @@ Exapmle 6 : before/around/after filter and execution order
 			return $text;
 		}
 
-	$app->around('GET','*','debuglog6');
+	$app->around('GET','.*','debuglog6');
 		function debuglog6($fn,$args) {
 			var_dump('around_start:2',$args);
 			$text = apply($fn,$args);

@@ -8,13 +8,20 @@
 
 class Pico
 {
+	static protected $cfg = null;
 	protected $factory = null;
 	protected $components = array();
-	protected $uses = array();
+	public $uses = array();
+
+	static public function cfg($oCfg = null)
+	{
+		if (is_null($oCfg)) return self::$cfg;
+		self::$cfg = $oCfg; 
+	}
 
 	public function __construct()
 	{
-		$this->factory = new PwComponentFactory;
+		$this->factory = PwComponentFactory::getInstance();
 		$this->initializeComponents();
 	}
 	
@@ -47,16 +54,41 @@ class Pico
 	public function initializeComponents()
 	{
 		$aComponents = array_unique($this->componentClasses());
-		foreach ($aComponents as $sClass) {
-			$this->components[$sClass] = quote($this->factory)->build($sClass);
+		foreach ($aComponents as $sKey => $sClass) {
+			if (is_array($sClass)) {
+				$args = $sClass;
+				$sClass = array_shift($args);
+				$sName = is_string($sKey) ? $sKey : $sClass ;
+				$this->components[$sName] = quote($this->factory)->buildArray($sClass,$args);
+			}
+			else {
+				$sName = is_string($sKey) ? $sKey : $sClass ;
+				$this->components[$sName] = quote($this->factory)->build($sClass);
+			}
 		}
 	}
 
-	public function attach($sName, $sClass = null)
+	public function attach($mName, $mClass = null)
 	{
-		$sClass = is_null($sClass) ? $sName : $sClass ;
-		if(property_exists($this, $sName)) unset($this->{$sName});
-		$this->components[$sName] = quote($this->factory)->build($sClass);
+		if (is_array($mName)) {
+			$sClass = array_shift($mName);
+			if(property_exists($this, $sClass)) unset($this->{$sClass});
+			$this->components[$sClass] = quote($this->factory)->buildArray($sClass,$mName);
+			return $this;
+		}
+		if (is_array($mClass)) {
+			$sClass = array_shift($mClass);
+		}
+		else {
+			$sClass = is_null($mClass) ? $mName : $mClass ;
+		}
+		if(property_exists($this, $mName)) unset($this->{$mName});
+		if (is_array($mClass)) {
+			$this->components[$mName] = quote($this->factory)->buildArray($sClass,$mClass);
+		}
+		else {
+			$this->components[$mName] = quote($this->factory)->build($sClass);
+		}
 		return $this;
 	}
 }

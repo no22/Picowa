@@ -31,8 +31,8 @@ class PwComponentFactory
 		$sClass = array_shift($args);
 		$sMethod = 'build' . $sClass;
 		$factory = self::getInstance();
-		if (method_exists($factory, $sMethod)) {
-			return call_user_func_array(array($factory->builder, $sMethod), $args);
+		if (method_exists($factory->builder(), $sMethod)) {
+			return call_user_func_array(array($factory->builder(), $sMethod), $args);
 		}
 		return $factory->newObj($sClass, $args);
 	}
@@ -61,9 +61,14 @@ class PwComponentFactory
 	{
 		$args = func_get_args();
 		$sClass = array_shift($args);
+		return $this->buildArray($sClass, $args);
+	}
+
+	public function buildArray($sClass, $args)
+	{
 		$sMethod = 'build' . $sClass;
-		if (method_exists($this->builder, $sMethod)) {
-			return call_user_func_array(array($this->builder, $sMethod), $args);
+		if (method_exists($this->builder(), $sMethod)) {
+			return call_user_func_array(array($this->builder(), $sMethod), $args);
 		}
 		return $this->newObj($sClass, $args);
 	}

@@ -13,7 +13,7 @@ class PwConfig
 
 	public function __construct($aDefault = null, $sPath = null)
 	{
-		$this->_configPath = CONF_PATH . (is_null($sPath) ? 'config' : $sPath) . $this->_extension ;
+		$this->_configPath = PICOWA_CONF_PATH . (is_null($sPath) ? 'config' : $sPath) . $this->_extension ;
 		if (!is_null($aDefault)) {
 			if (!file_exists($this->_configPath)) {
 				file_put_contents($this->_configPath, $this->_encode($aDefault), LOCK_EX);
