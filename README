@@ -92,58 +92,58 @@ Exapmle 6 : before/around/after filter and execution order
 
 	$app = new Picowa;
 	
-	$app->get('/:name','hello');
-		function hello($name) {
-			return "Hello {$name}!";
-		}
-
-	$app->get('/bye/:name','bye');
-		function bye($name) {
-			return "Bye bye {$name}!";
+	$app->get('/','hello');
+		function hello() {
+			echo __FUNCTION__.',';
+			return "Hello world!";
 		}
 	
-	$app->before('GET','.*','debuglog');
-		function debuglog($args) {
-			var_dump('before:1',$args);
+	$app->before('GET','.*','before_1');
+		function before_1($args) {
+			echo __FUNCTION__.',';
 		}
 
-	$app->before('GET','.*','debuglog2');
-		function debuglog2($args) {
-			var_dump('before:2',$args);
+	$app->before('GET','.*','before_2');
+		function before_2($args) {
+			echo __FUNCTION__.',';
 		}
 
-	$app->after('GET','.*','debuglog3');
-		function debuglog3($text) {
-			var_dump('after:1',$text);
+	$app->after('GET','.*','after_1');
+		function after_1($text) {
+			echo __FUNCTION__.',';
 			return $text;
 		}
 
-	$app->after('GET','.*','debuglog4');
-		function debuglog4($text) {
-			var_dump('after:2',$text);
+	$app->after('GET','.*','after_2');
+		function after_2($text) {
+			echo __FUNCTION__.',';
 			return $text;
 		}
 
-	$app->around('GET','.*','debuglog5');
-		function debuglog5($fn,$args) {
-			var_dump('around_start:1',$args);
+	$app->around('GET','.*','around_1');
+		function around_1($fn,$args) {
+			echo __FUNCTION__.':start,';
 			$text = apply($fn,$args);
-			var_dump('around_end:1',$text);
+			echo __FUNCTION__.':end,';
 			return $text;
 		}
 
-	$app->around('GET','.*','debuglog6');
-		function debuglog6($fn,$args) {
-			var_dump('around_start:2',$args);
+	$app->around('GET','.*','around_2');
+		function around_2($fn,$args) {
+			echo __FUNCTION__.':start,';
 			$text = apply($fn,$args);
-			var_dump('around_end:2',$text);
+			echo __FUNCTION__.':end,';
 			return $text;
 		}
-		
+	
+	// before_1,before_2,around_1:start,around_2:start,
+	// hello,
+	// around_2:end,around_1:end,after_1,after_2,
+	
 	$app->run();
 
 
-Exapmle 7 : component lazy loading and simple dependency injection
+Exapmle 7 : simple dependency injection
 
 	class Application extends Picowa
 	{
@@ -158,28 +158,16 @@ Exapmle 7 : component lazy loading and simple dependency injection
 	class Foo extends Pico
 	{
 		public $name = 'Foo';
-		public function __construct()
-		{
-			var_dump(get_class($this));
-		}
 	}
 
 	class Bar extends Pico
 	{
 		public $name = 'Bar';
-		public function __construct()
-		{
-			var_dump(get_class($this));
-		}
 	}
 
 	class Baz extends Pico
 	{
 		public $name = 'Baz';
-		public function __construct()
-		{
-			var_dump(get_class($this));
-		}
 	}
 
 	class MyContainer extends PwComponentBuilder
@@ -202,11 +190,77 @@ Exapmle 7 : component lazy loading and simple dependency injection
 		function hello($a) {
 			return "Hello!".$a->Foo->name.$a->Bar->name.$a->Baz->name;
 		}
+		// Hello!BarFooBaz
 
-	$app->get('/test/',bind('hello_test',$app));
-		function hello_test($a) {
-			return "Hello!".$a->Foo->name.$a->Bar->name;
+	$app->run();
+
+
+Exapmle 8 : lazy component loading
+
+	class Application extends Picowa
+	{
+		public $uses = array(
+			'Foo', 'Bar'
+		);
+
+		public function hello()
+		{
+			return 'Hello world!';
 		}
+	}
+
+	class Foo extends Pico
+	{
+		public function __construct()
+		{
+			parent::__construct();
+			echo "Foo was created. ";
+		}
+		
+		public function hello()
+		{
+			return 'Hello foo!';
+		}
+	}
+
+	class Bar extends Pico
+	{
+		public $uses = array(
+			'Baz'
+		);
+
+		public function __construct()
+		{
+			parent::__construct();
+			echo "Bar was created. ";
+		}
+		
+		public function hello()
+		{
+			return 'Hello bar!';
+		}
+	}
+
+	class Baz extends Pico
+	{
+		public function __construct()
+		{
+			parent::__construct();
+			echo "Baz was created. ";
+		}
+		
+		public function hello()
+		{
+			return 'Hello baz!';
+		}
+	}
+
+	$app = new Application;
+
+	$app->get('/', $app->_hello());					// Hello world!
+	$app->get('/foo', $app->_Foo->_hello());		// Foo was created. Hello foo!
+	$app->get('/bar', $app->_Bar->_hello());		// Bar was created. Hello bar!
+	$app->get('/baz', $app->_Bar->_Baz->_hello());	// Bar was created. Baz was created. Hello baz!
 
 	$app->run();
 

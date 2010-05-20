@@ -1,5 +1,4 @@
 <?php
-//>php -l %FILE%
 /**
  * Picowa AutoLoad 
  *

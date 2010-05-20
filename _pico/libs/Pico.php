@@ -34,7 +34,10 @@ class Pico
 
 	public function __get($sName)
 	{
-		if (isset($this->components[$sName])) {
+		if (startsWith($sName, '_')) {
+			return $this->factory->build('PwPropertyPromise', $this, substr($sName, 1));
+		}
+		else if (isset($this->components[$sName])) {
 			return $this->{$sName} = call_user_func($this->components[$sName]);
 		}
 		return null;

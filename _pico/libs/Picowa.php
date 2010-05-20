@@ -14,8 +14,8 @@ class Picowa extends Pico
 		'around' => array(),
 	);
 	protected $mappings = array();
-	protected $error;
-	protected $success;
+	public $error;
+	public $success;
 	public $uses = array(
 		'session' => 'PwSessionWrapper',
 		'request' => 'PwRequestWrapper',
@@ -47,7 +47,7 @@ class Picowa extends Pico
 	
 	public function root() { return PICOWA_APP_PATH; }
 
-	protected function path($path) { return $this->root() . $path; }
+	public function path($path) { return $this->root() . $path; }
 	
 	public function options() { return $this->options; }
 
@@ -177,7 +177,7 @@ class Picowa extends Pico
 		$this->event($httpMethod, $urls, $callback, $conditions, $this->filters['around']);
 	}
 	
-	protected function redirect($path) 
+	public function redirect($path) 
 	{
 		$uri = $this->url()->path($path);
 		$this->session->error = $this->error;
@@ -208,14 +208,14 @@ class Picowa extends Pico
 		}
 	}
 
-	protected function sendFile($filename, $contentType, $path) 
+	public function sendFile($filename, $contentType, $path) 
 	{
 		header("Content-type: $contentType");
 		header("Content-Disposition: attachment; filename=$filename");
 		return readfile($path);
 	}
 
-	protected function sendDownload($filename, $path) 
+	public function sendDownload($filename, $path) 
 	{
 		header("Content-Type: application/force-download");
 		header("Content-Type: application/octet-stream");
