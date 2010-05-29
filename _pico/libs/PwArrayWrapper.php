@@ -21,7 +21,7 @@ class PwArrayWrapper
 
 	public function __set($key, $value) 
 	{
-		$this->subject = $value;
+		$this->subject[$key] = $value;
 		return $value;
 	}
 

@@ -1,6 +1,6 @@
 <?php
 /**
- * Picowa 軽量Webアプリケーションクラス
+ * Picowa Lightweight Web Application Class
  *
  * @package		Picowa
  * @since		2010-04-06
@@ -77,6 +77,11 @@ class Picowa extends Pico
 		die();
 	}
 
+	public function http($method, $url, $callback, $conditions=array()) 
+	{
+		$this->event($method, $url, $callback, $conditions, $this->mappings);
+	}
+
 	public function get($url, $callback, $conditions=array()) 
 	{
 		$this->event('get', $url, $callback, $conditions, $this->mappings);
@@ -118,7 +123,7 @@ class Picowa extends Pico
 	protected function processRequest() 
 	{
 		$url = $this->url;
-		foreach ($this->mappings as $mapping) {		
+		foreach ($this->mappings as $mapping) {
 			if ($url->match($mapping[0], $mapping[1], $mapping[3])) {
 				return $this->execute($mapping[2], $url, $mapping[0]);
 			}

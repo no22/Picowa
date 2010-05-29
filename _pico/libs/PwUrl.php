@@ -1,7 +1,7 @@
 <?php
 /**
  * PwUrl
- * Picowa標準URLクラス
+ * 
  * @package		Picowa
  * @since		2010-04-09
  */
@@ -13,22 +13,26 @@ class PwUrl
 	public $params = array();
 	public $match = false;
 	public $mountPoint = '';
+	public $requestUrl;
+	public $requestMethod;
 	
 	public function __construct($mountPoint = '') 
 	{
 		$this->mountPoint = $mountPoint;
+		$this->requestMethod = $_SERVER['REQUEST_METHOD'];
+		$this->requestUrl = str_replace($mountPoint, '', $_SERVER['REQUEST_URI']);
 	}
 
 	public function match($httpMethod, $url, $conditions=array(), $mountPoint = null) 
 	{
-		$mountPoint = is_null($mountPoint) ? $this->mountPoint : $mountPoint ;
-		$requestMethod = $_SERVER['REQUEST_METHOD'];
-		$requestUri = str_replace($mountPoint, '', $_SERVER['REQUEST_URI']);
+		$requestUri = is_null($mountPoint) ? $this->requestUrl : str_replace($mountPoint, '', $_SERVER['REQUEST_URI']) ;
+		$requestMethod = $this->requestMethod;
+		$this->method = strtoupper($httpMethod);
 		$this->url = $url;
-		$this->method = $httpMethod;
 		$this->conditions = $conditions;
 		$this->match = false;
-		if (strtoupper($httpMethod) === $requestMethod) {
+		$httpMethods = explode('|', strtoupper($httpMethod));
+		if ($httpMethod === '*' || in_array($requestMethod, $httpMethods)) {
 			$paramNames = array();
 			$paramValues = array();
 			preg_match_all('@:([a-zA-Z]+)@', $url, $paramNames, PREG_PATTERN_ORDER);
@@ -50,7 +54,7 @@ class PwUrl
 		return PICOWA_ROOT_URL . $this->mountPoint . $path;
 	}
 
-	private function regexValue($matches) 
+	protected function regexValue($matches) 
 	{
 		$key = strtr($matches[0], array(':' => ''));
 		if (array_key_exists($key, $this->conditions)) {
@@ -60,5 +64,31 @@ class PwUrl
 			return '([a-zA-Z0-9_]+)';
 		}
 	}
+
+	public function extractQuery($sUrl = null)
+	{
+		$sUrl = is_null($sUrl) ? $this->requestUrl : $sUrl ;
+		if (preg_match('/\?(.*)(?:#.*)?$/', $sUrl, $matches)) {
+			$aQuery = explode('&', $matches[1]);
+			$aResult = array();
+			foreach ($aQuery as $elem) {
+				list($key, $value) = explode('=', $elem);
+				$aResult[$key] = $value;
+			}
+			return $aResult;
+		}
+		return array();
+	}
+
+	public function makeQuery($aQuery, $sPath = null)
+	{
+		$sPath = is_null($sPath) ? PICOWA_REQUEST_URL : $sPath ;
+		$aResult = array();
+		foreach ($aQuery as $key => $value) {
+			$aResult[] = $key.'='.$value;
+		}
+		return $this->path($sPath).'?'.implode('&', $aResult);
+	}
+
 }
 

@@ -1,7 +1,7 @@
 <?php
 /**
  * PwPropertyPromise
- * Picowa用オブジェクトプロパティ遅延アクセスクラス
+ * 
  * @package		Picowa
  * @since		2010-05-20
  */	

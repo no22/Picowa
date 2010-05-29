@@ -1,7 +1,7 @@
 <?php
 /**
  * PwConfig
- * Picowa用設定ファイルの情報取得・保存クラス
+ * 
  * @package		Picowa
  * @since		2010-04-09
  */

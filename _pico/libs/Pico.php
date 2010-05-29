@@ -1,6 +1,6 @@
 <?php
 /**
- * Picowa オブジェクトクラス
+ * Picowa Object Class
  *
  * @package		Picowa
  * @since		2010-04-13
@@ -20,6 +20,11 @@ class Pico
 	}
 
 	public function __construct()
+	{
+		$this->initPico();
+	}
+
+	public function initPico()
 	{
 		$this->factory = PwComponentFactory::getInstance();
 		$this->initializeComponents();
@@ -56,7 +61,7 @@ class Pico
 
 	public function initializeComponents()
 	{
-		$aComponents = array_unique($this->componentClasses());
+		$aComponents = $this->componentClasses();
 		foreach ($aComponents as $sKey => $sClass) {
 			if (is_array($sClass)) {
 				$args = $sClass;

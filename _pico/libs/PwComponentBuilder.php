@@ -1,7 +1,7 @@
 <?php
 /**
  * PwComponentBuilder
- * Picowa用ComponentBuilderクラス
+ * 
  * @package		Picowa
  * @since		2010-04-15
  */

@@ -1,7 +1,7 @@
 <?php
 /**
  * PwTemplate
- * Picowa標準HTMLテンプレートクラス
+ * Picowa HTML Template Class
  * @package		Picowa
  * @since		2010-04-09
  */

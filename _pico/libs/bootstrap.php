@@ -58,6 +58,7 @@
 		$url = isset($_GET['url']) ? $_GET['url'] : '' ;
 		list($reqUrl) = explode('?',$_SERVER['REQUEST_URI']);
 		define('PICOWA_MOUNT_POINT', substr($reqUrl, 0, -strlen($url)-1));
+		define('PICOWA_REQUEST_URL', '/'.$url);
 	}
 
 /**

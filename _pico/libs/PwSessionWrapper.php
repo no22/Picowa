@@ -14,8 +14,14 @@
 
 	public function __set($key, $value) 
 	{
-		$_SESSION[$key] = $value;
-		return $value;
+		if (is_null($value)) {
+			unset($_SESSION[$key]);
+			return $value;
+		}
+		else {
+			$_SESSION[$key] = $value;
+			return $value;
+		}
 	}
 
 	public function __call($sName, $aArgs)
