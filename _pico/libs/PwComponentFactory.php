@@ -76,7 +76,6 @@ class PwComponentFactory
 	protected function newObj($sClass, $args = array())
 	{
 		if (count($args) === 0) return new $sClass;
-		if (!method_exists($sClass,  '__construct')) return false;
 		$refMethod = new ReflectionMethod($sClass,  '__construct');
 		$params = $refMethod->getParameters();
 		$re_args = array();

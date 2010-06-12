@@ -182,9 +182,9 @@ class Picowa extends Pico
 		$this->event($httpMethod, $urls, $callback, $conditions, $this->filters['around']);
 	}
 	
-	public function redirect($path) 
+	public function redirect($path, $isFull = false) 
 	{
-		$uri = $this->url()->path($path);
+		$uri = $isFull ? $path : $this->url()->path($path);
 		$this->session->error = $this->error;
 		$this->session->success = $this->success;
 		header("Location: {$uri}");

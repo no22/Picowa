@@ -80,12 +80,15 @@ class PwUrl
 		return array();
 	}
 
-	public function makeQuery($aQuery, $sPath = null)
+	public function makeQuery($aQuery, $sPath = null, $bShort = false)
 	{
 		$sPath = is_null($sPath) ? PICOWA_REQUEST_URL : $sPath ;
 		$aResult = array();
 		foreach ($aQuery as $key => $value) {
 			$aResult[] = $key.'='.$value;
+		}
+		if ($bShort) {
+			return $sPath.'?'.implode('&', $aResult);
 		}
 		return $this->path($sPath).'?'.implode('&', $aResult);
 	}
