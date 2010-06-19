@@ -213,10 +213,10 @@ class Picowa extends Pico
 		}
 	}
 
-	public function sendFile($filename, $contentType, $path) 
+	public function sendFile($filename, $contentType, $path, $type = 'attachment')
 	{
 		header("Content-type: $contentType");
-		header("Content-Disposition: attachment; filename=$filename");
+		header("Content-Disposition: $type; filename=$filename");
 		return readfile($path);
 	}
 
